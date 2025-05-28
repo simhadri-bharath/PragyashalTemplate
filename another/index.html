@@ -67,7 +67,6 @@
       margin-bottom: 0;
       line-height: 1.3;
     }
-
     /* Modal Overlay and Navigation */
     .modal-overlay {
       display: none;
@@ -134,8 +133,6 @@
     .modal-close:hover {
       color: #4285f4;
     }
-
-    /* Modal Main */
     .modal-carousel-container {
       display: flex;
       align-items: center;
@@ -263,8 +260,6 @@
       text-overflow: ellipsis;
       white-space: normal;
     }
-
-    /* Modal Card */
     .media-modal {
       background: #fff;
       border-radius: 18px;
@@ -303,22 +298,6 @@
       overflow-y: auto;
       max-height: 55vh;
     }
-    .modal-article-img {
-      width: 100%;
-      margin: 18px 0 18px 0;
-      border-radius: 8px;
-      object-fit: contain;
-      background: #f5f7fa;
-      max-height: 260px;
-      display: block;
-    }
-    .modal-article-content {
-      font-size: 1.05rem;
-      color: #444;
-      margin-bottom: 12px;
-      line-height: 1.7;
-    }
-
     /* Responsive adjustments */
     @media (max-width: 1200px) {
       .media-grid { max-width: 100vw; }
@@ -357,7 +336,6 @@
 
   <!-- Modal Overlay -->
   <div class="modal-overlay" id="modal-overlay">
-    <!-- Modal navigation bar (X and external link) -->
     <div class="modal-nav-bar">
       <div class="modal-nav-actions">
         <a class="modal-extlink" id="modal-extlink" href="#" target="_blank" title="Open external article">
@@ -366,7 +344,6 @@
         <button class="modal-close" id="modal-close" title="Close">&times;</button>
       </div>
     </div>
-    <!-- Carousel arrows and modal card -->
     <div class="modal-carousel-container">
       <button class="modal-carousel-arrow-outer left" id="modal-arrow-left" title="Previous">
         <span class="modal-carousel-arrow" id="modal-arrow-left-btn">
@@ -396,56 +373,48 @@
       </button>
     </div>
   </div>
-
   <script>
-    // Media data - you can add more cards as needed
+    // Media data - cleaned up, only used properties remain
     const mediaData = [
       {
         title:"Medvarsity: Transforming healthcare education with its AI-enabled cloud platform and empowering healthcare professionals",
         image:"https://images.folloze.com/image/upload/c_lfill,h_325,w_486/f_auto/q_auto/e_sharpen/v1695130356/owcrnv5nbtdksasapao9.png",
-        articleImage:"https://images.folloze.com/image/upload/c_lfill,h_325,w_486/f_auto/q_auto/e_sharpen/v1695130356/owcrnv5nbtdksasapao9.png",
         content: "Medvarsity is leveraging an AI-enabled cloud platform to revolutionize healthcare education, empowering professionals with advanced digital tools and personalized learning experiences.",
         link: "https://education.economictimes.indiatimes.com/news/industry/google-cloud-brings-in-genai-tools-to-transform-education-with-the-enhanced-digital-campus-2-0-program/112391780"
       },
       {
         title: "Techno India Group Partners with Google to Launch Specialized B.Tech Programs In Cloud Computing, Data Science and AL/ML",
         image:"https://images.folloze.com/image/upload/c_lfill,h_325,w_486/f_auto/q_auto/e_sharpen/v1722544894/a0tjoacd2cqymkkh0ysv.png",
-        articleImg: "https://assets-global.website-files.com/5f6b7b8b8b8b8b8b8b8b8b8/5f6b7b8b8b8b8b8b8b8b8b8_illustration-2.svg",
-        content:" Medvarsity: Transforming healthcare education with its AI-enabled cloud platform and empowering healthcare professionals",
+        content:"Medvarsity: Transforming healthcare education with its AI-enabled cloud platform and empowering healthcare professionals",
         link: "https://www.perplexity.ai/search/in-the-above-code-remove-the-u-2jVdU97mThmg47buuQmW3g"
       },
       {
         title: "Google Cloud brings in GenAI tools to transform education with the enhanced 'Digital Campus 2.0' program - ET Education",
         image: "https://images.folloze.com/image/fetch/c_lfill,h_325,w_486/f_auto/q_auto/e_sharpen/https://etimg.etb2bimg.com/thumb/msid-112391780%252Cimgsize-82826%252Cwidth-1200%252Cheight%3D765%252Coverlay-eteducation/news/industry/google-cloud-brings-in-genai-tools-to-transform-education-with-the-enhanced-digital-campus-2-0-program.jpg",
-        articleImg: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=600&q=80",
         content: "Google Cloud introduced 'Digital Campus on Google Cloud 2.0' at the EDNXT Hyderabad event, empowering institutions with generative AI, virtual tutors, and content summarization to address educator burnout and prepare students for future-ready skills.",
         link: "https://education.economictimes.indiatimes.com/news/industry/google-cloud-brings-in-genai-tools-to-transform-education-with-the-enhanced-digital-campus-2-0-program/112391780"
       },
       {
         title: "Google Cloud India underscores power of cloud, Gen AI in education - ET Education",
         image: "https://images.folloze.com/image/fetch/c_lfill,h_325,w_486/f_auto/q_auto/e_sharpen/https://etimg.etb2bimg.com/thumb/msid-106307644%252Cimgsize-70390%252Cwidth-1200%252Cheight%3D765%252Coverlay-eteducation/news/edutech/google-cloud-india-underscores-power-of-cloud-gen-ai-in-education.jpg",
-        articleImg: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=600&q=80",
         content: "At a recent summit, Google Cloud India highlighted how cloud and Gen AI are transforming education, focusing on accessibility, educator empowerment, and secure, scalable collaboration.",
         link: "https://education.economictimes.indiatimes.com/news/industry/google-cloud-india-underscores-power-of-cloud-gen-ai-in-education/112391780"
       },
       {
         title: "Google Digital Campus launch underscores potential of AI in education - ET Education",
         image: "https://images.folloze.com/image/fetch/c_lfill,h_325,w_486/f_auto/q_auto/e_sharpen/https://etimg.etb2bimg.com/thumb/msid-105131331%252Cimgsize-176816%252Cwidth-1200%252Cheight%3D765%252Coverlay-eteducation/news/industry/google-digital-campus-launch-underscores-potential-of-ai-in-education.jpg",
-        articleImg: "https://images.folloze.com/image/fetch/c_lfill,h_325,w_486/f_auto/q_auto/e_sharpen/https://etimg.etb2bimg.com/thumb/msid-105131331%252Cimgsize-176816%252Cwidth-1200%252Cheight%3D765%252Coverlay-eteducation/news/industry/google-digital-campus-launch-underscores-potential-of-ai-in-education.jpg",
         content: "Google Digital Campus launch event showcased the transformative potential of AI in education, with new tools and partnerships to foster skill development and industry collaboration.",
         link: "https://googlecloud.folloze.com/digitalcampus/media-reports/google-digital-campus-launch-underscores-potential-of-ai-in-education-et-education?fw=18cc7"
       },
       {
         title: "Digital Campus on Google Cloud program to foster skill development & industry collaboration",
         image: "https://images.folloze.com/image/fetch/c_lfill,h_325,w_486/f_auto/q_auto/e_sharpen/https://etimg.etb2bimg.com/thumb/msid-103996320%252Cimgsize-61788%252Cwidth-1200%252Cheight%3D765%252Coverlay-eteducation/news/edutech/digital-campus-on-google-cloud-program-to-foster-skill-development-industry-readiness-in-students.jpg",
-        articleImg: "https://images.folloze.com/image/fetch/c_lfill,h_325,w_486/f_auto/q_auto/e_sharpen/https://etimg.etb2bimg.com/thumb/msid-103996320%252Cimgsize-61788%252Cwidth-1200%252Cheight%3D765%252Coverlay-eteducation/news/edutech/digital-campus-on-google-cloud-program-to-foster-skill-development-industry-readiness-in-students.jpg",
         content: "The Digital Campus on Google Cloud program is designed to foster skill development and industry collaboration, offering a modern learning environment for students and educators.",
         link: "#"
       },
       {
         title: "Techno India Collaborates with Google Cloud to Propel Education In The Digital Era",
         image: "https://images.folloze.com/image/upload/c_lfill,h_325,w_486/f_auto/q_auto/e_sharpen/v1631034909/gf5los36f6nii1p5rwfc.png",
-        articleImg: "https://images.folloze.com/image/upload/c_lfill,h_325,w_486/f_auto/q_auto/e_sharpen/v1631034909/gf5los36f6nii1p5rwfc.png",
         content: "Techno India and Google Cloud join forces to propel education in the digital era, focusing on cloud-based learning and GenAI-powered educational resources.",
         link: "#"
       }
@@ -490,22 +459,19 @@
     function renderModal(idx) {
       const item = mediaData[idx];
       modalTitle.textContent = item.title;
-       // Only render the link in modal body
-       modalBody.innerHTML = `
-  <iframe 
-    src="${item.link}" 
-    style="width:100%;min-height:60vh;border:1px solid #ccc;border-radius:8px;" 
-    frameborder="0"
-    allowfullscreen
-  ></iframe>
-  <div style="margin-top:10px;">
-    <a href="${item.link}" target="_blank" rel="noopener noreferrer" style="font-size:1.1rem;color:#1a73e8;text-decoration:underline;word-break:break-all;">
-      Open in new tab
-    </a>
-  </div>
-`;
-
-
+      modalBody.innerHTML = `
+        <iframe 
+          src="${item.link}" 
+          style="width:100%;min-height:60vh;border:1px solid #ccc;border-radius:8px;" 
+          frameborder="0"
+          allowfullscreen
+        ></iframe>
+        <div style="margin-top:10px;">
+          <a href="${item.link}" target="_blank" rel="noopener noreferrer" style="font-size:1.1rem;color:#1a73e8;text-decoration:underline;word-break:break-all;">
+            Open in new tab
+          </a>
+        </div>
+      `;
       modalExtLink.href = item.link;
 
       // Left preview
@@ -552,7 +518,6 @@
 
     modalClose.onclick = closeModal;
     modalOverlay.onclick = function(e) {
-      // Only close if clicking outside modal content
       if (e.target === modalOverlay) closeModal();
     };
     modalArrowLeft.onclick = function(e) {
@@ -581,7 +546,6 @@
         renderModal(currentIdx);
       }
     });
-    // External link opens in new tab
     modalExtLink.onclick = function(e) {
       e.stopPropagation();
     };
