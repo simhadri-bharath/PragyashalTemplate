@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Media Center - Fully Responsive</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Google Fonts: Roboto -->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Roboto', Arial, sans-serif;
+      background: #fff;
+      margin: 0;
+      padding: 0;
+      color: #222;
+    }
+    .media-center-title {
+      text-align: center;
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin: 48px 0 36px 0;
+      letter-spacing: -1px;
+    }
+    .media-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+      max-width: 1200px;
+      margin: 0 auto 40px auto;
+      padding: 0 8px;
+    }
+    .media-card {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 2px 12px rgba(60,64,67,0.10), 0 1.5px 4px rgba(60,64,67,0.08);
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      transition: box-shadow 0.15s, transform 0.15s;
+      position: relative;
+      min-width: 0;
+      min-height: 0;
+    }
+    .media-card:hover {
+      box-shadow: 0 6px 24px rgba(60,64,67,0.16), 0 2px 8px rgba(60,64,67,0.12);
+      transform: translateY(-2px) scale(1.02);
+    }
+    .media-card-img {
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 14px 14px 0 0;
+      background: #f5f7fa;
+      min-height: 120px;
+    }
+    .media-card-content {
+      padding: 22px 20px 16px 20px;
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+    .media-card-title {
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: #222;
+      margin-bottom: 0;
+      line-height: 1.3;
+    }
+
+    /* Modal Overlay and Navigation */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0; top: 0; right: 0; bottom: 0;
+      background: rgba(33, 33, 33, 0.45);
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .modal-overlay.active {
+      display: flex;
+    }
+    .modal-nav-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      z-index: 1100;
+      pointer-events: none;
+    }
+    .modal-nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-right: 24px;
+      margin-top: 12px;
+      pointer-events: all;
+    }
+    .modal-extlink {
+      width: 32px;
+      height: 32px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: opacity 0.13s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-extlink:hover {
+      opacity: 1;
+    }
+    .modal-close {
+      cursor: pointer;
+      font-size: 2.2rem;
+      color: #888;
+      border: none;
+      background: transparent;
+      transition: color 0.13s;
+      line-height: 1;
+      width: 38px;
+      height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-close:hover {
+      color: #4285f4;
+    }
+
+    /* Modal Main */
+    .modal-carousel-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100vw;
+      height: 100vh;
+      position: fixed;
+      left: 0; top: 0;
+      z-index: 1050;
+      pointer-events: none;
+    }
+    .modal-carousel-arrow-outer {
+      position: absolute;
+      top: 0;
+      height: 100vh;
+      width: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: all;
+      z-index: 1201;
+      background: none;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      transition: background 0.13s;
+    }
+    .modal-carousel-arrow-outer.left {
+      left: 0;
+      justify-content: flex-start;
+    }
+    .modal-carousel-arrow-outer.right {
+      right: 0;
+      justify-content: flex-end;
+    }
+    .modal-carousel-arrow {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(60,64,67,0.13);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.8;
+      transition: background 0.13s, opacity 0.15s;
+      z-index: 1202;
+      position: relative;
+    }
+    .modal-carousel-arrow:disabled {
+      opacity: 0.2;
+      cursor: default;
+    }
+    .modal-carousel-arrow img {
+      width: 32px;
+      height: 32px;
+      filter: grayscale(1) brightness(0.4);
+      pointer-events: none;
+    }
+    .modal-carousel-arrow-outer .preview-card {
+      opacity: 0;
+      pointer-events: none;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%) translateX(-30px);
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 4px 16px rgba(60,64,67,0.18);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px 16px 10px 16px;
+      min-width: 210px;
+      max-width: 320px;
+      min-height: 190px;
+      z-index: 1203;
+      transition: opacity 0.18s, transform 0.18s;
+      white-space: normal;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    .modal-carousel-arrow-outer.left .preview-card {
+      left: 80px;
+      transform: translateY(-50%) translateX(-30px);
+    }
+    .modal-carousel-arrow-outer.right .preview-card {
+      right: 80px;
+      transform: translateY(-50%) translateX(30px);
+    }
+    .modal-carousel-arrow-outer:hover .preview-card,
+    .modal-carousel-arrow-outer:focus .preview-card {
+      opacity: 1;
+      pointer-events: all;
+      transform: translateY(-50%) translateX(0);
+    }
+    .preview-img {
+      width: 120px;
+      height: 80px;
+      border-radius: 8px;
+      object-fit: cover;
+      flex-shrink: 0;
+      background: #eee;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 8px rgba(60,64,67,0.08);
+    }
+    .preview-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #222;
+      margin-bottom: 6px;
+      text-align: center;
+      line-height: 1.2;
+      max-width: 220px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: normal;
+    }
+    .preview-desc {
+      font-size: 0.98rem;
+      color: #555;
+      text-align: center;
+      line-height: 1.3;
+      max-width: 220px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: normal;
+    }
+
+    /* Modal Card */
+    .media-modal {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 8px 32px rgba(60,64,67,.18);
+      max-width: 720px;
+      width: 96vw;
+      min-height: 560px;
+      max-height: 85vh;
+      padding: 0;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      animation: modalIn 0.22s cubic-bezier(.4,0,.2,1);
+      overflow: hidden;
+      pointer-events: all;
+      z-index: 1200;
+      margin: 0 24px;
+    }
+    @keyframes modalIn {
+      from { transform: translateY(40px) scale(0.95); opacity: 0; }
+      to   { transform: translateY(0) scale(1); opacity: 1; }
+    }
+    .modal-header {
+      padding: 32px 36px 0 36px;
+      text-align: left;
+    }
+    .modal-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #222;
+      margin: 0 0 12px 0;
+      line-height: 1.3;
+    }
+    .modal-body {
+      padding: 0 36px 28px 36px;
+      overflow-y: auto;
+      max-height: 55vh;
+    }
+    .modal-article-img {
+      width: 100%;
+      margin: 18px 0 18px 0;
+      border-radius: 8px;
+      object-fit: contain;
+      background: #f5f7fa;
+      max-height: 260px;
+      display: block;
+    }
+    .modal-article-content {
+      font-size: 1.05rem;
+      color: #444;
+      margin-bottom: 12px;
+      line-height: 1.7;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 1200px) {
+      .media-grid { max-width: 100vw; }
+      .media-modal { max-width: 98vw; }
+    }
+    @media (max-width: 900px) {
+      .media-center-title { font-size: 1.5rem; margin: 24px 0 20px 0; }
+      .media-grid { gap: 18px; }
+      .media-card-title { font-size: 0.98rem; }
+      .media-modal { max-width: 99vw; }
+      .modal-header, .modal-body { padding-left: 12px; padding-right: 12px; }
+      .modal-header { padding-top: 18px; }
+      .modal-body { max-height: 45vh; }
+      .modal-carousel-arrow-outer { width: 80px; }
+      .modal-carousel-arrow { width: 40px; height: 40px; }
+      .modal-carousel-arrow img { width: 22px; height: 22px; }
+      .preview-img { width: 70px; height: 50px; }
+      .preview-title { max-width: 90px; font-size: 0.92rem; }
+      .preview-desc { max-width: 90px; font-size: 0.85rem; }
+      .modal-carousel-arrow-outer .preview-card { min-width: 90px; max-width: 120px; }
+    }
+    @media (max-width: 600px) {
+      .media-center-title { font-size: 1.1rem; }
+      .media-grid { grid-template-columns: 1fr; gap: 12px; }
+      .media-card-content { padding: 12px 8px 10px 8px; }
+      .modal-title { font-size: 1rem; }
+      .modal-header { padding-top: 10px; }
+      .modal-body { padding-bottom: 8px; }
+      .media-modal { margin: 0 2vw; }
+    }
+  </style>
+</head>
+<body>
+  <div class="media-center-title">Media Center</div>
+  <div class="media-grid" id="media-grid"></div>
+
+  <!-- Modal Overlay -->
+  <div class="modal-overlay" id="modal-overlay">
+    <!-- Modal navigation bar (X and external link) -->
+    <div class="modal-nav-bar">
+      <div class="modal-nav-actions">
+        <a class="modal-extlink" id="modal-extlink" href="#" target="_blank" title="Open external article">
+          <img src="https://img.icons8.com/material-outlined/24/000000/external-link.png" alt="External Link">
+        </a>
+        <button class="modal-close" id="modal-close" title="Close">&times;</button>
+      </div>
+    </div>
+    <!-- Carousel arrows and modal card -->
+    <div class="modal-carousel-container">
+      <button class="modal-carousel-arrow-outer left" id="modal-arrow-left" title="Previous">
+        <span class="modal-carousel-arrow" id="modal-arrow-left-btn">
+          <img src="https://img.icons8.com/ios-filled/50/000000/chevron-left.png" alt="Previous">
+        </span>
+        <span class="preview-card" id="preview-card-left">
+          <img class="preview-img" id="preview-img-left" src="" alt="Preview">
+          <span class="preview-title" id="preview-title-left"></span>
+          <span class="preview-desc" id="preview-desc-left"></span>
+        </span>
+      </button>
+      <div class="media-modal" id="media-modal">
+        <div class="modal-header">
+          <div class="modal-title" id="modal-title"></div>
+        </div>
+        <div class="modal-body" id="modal-body"></div>
+      </div>
+      <button class="modal-carousel-arrow-outer right" id="modal-arrow-right" title="Next">
+        <span class="preview-card" id="preview-card-right">
+          <img class="preview-img" id="preview-img-right" src="" alt="Preview">
+          <span class="preview-title" id="preview-title-right"></span>
+          <span class="preview-desc" id="preview-desc-right"></span>
+        </span>
+        <span class="modal-carousel-arrow" id="modal-arrow-right-btn">
+          <img src="https://img.icons8.com/ios-filled/50/000000/chevron-right.png" alt="Next">
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Media data - you can add more cards as needed
+    const mediaData = [
+      {
+        title:"Medvarsity: Transforming healthcare education with its AI-enabled cloud platform and empowering healthcare professionals",
+        image:"https://images.folloze.com/image/upload/c_lfill,h_325,w_486/f_auto/q_auto/e_sharpen/v1695130356/owcrnv5nbtdksasapao9.png",
+        articleImage:"https://images.folloze.com/image/upload/c_lfill,h_325,w_486/f_auto/q_auto/e_sharpen/v1695130356/owcrnv5nbtdksasapao9.png",
+        content: "Medvarsity is leveraging an AI-enabled cloud platform to revolutionize healthcare education, empowering professionals with advanced digital tools and personalized learning experiences.",
+        link: "https://education.economictimes.indiatimes.com/news/industry/google-cloud-brings-in-genai-tools-to-transform-education-with-the-enhanced-digital-campus-2-0-program/112391780"
+      },
+      {
+        title: "Techno India Group Partners with Google to Launch Specialized B.Tech Programs In Cloud Computing, Data Science and AL/ML",
+        image:"https://images.folloze.com/image/upload/c_lfill,h_325,w_486/f_auto/q_auto/e_sharpen/v1722544894/a0tjoacd2cqymkkh0ysv.png",
+        articleImg: "https://assets-global.website-files.com/5f6b7b8b8b8b8b8b8b8b8b8/5f6b7b8b8b8b8b8b8b8b8b8_illustration-2.svg",
+        content:" Medvarsity: Transforming healthcare education with its AI-enabled cloud platform and empowering healthcare professionals",
+        link: "https://www.perplexity.ai/search/in-the-above-code-remove-the-u-2jVdU97mThmg47buuQmW3g"
+      },
+      {
+        title: "Google Cloud brings in GenAI tools to transform education with the enhanced 'Digital Campus 2.0' program - ET Education",
+        image: "https://images.folloze.com/image/fetch/c_lfill,h_325,w_486/f_auto/q_auto/e_sharpen/https://etimg.etb2bimg.com/thumb/msid-112391780%252Cimgsize-82826%252Cwidth-1200%252Cheight%3D765%252Coverlay-eteducation/news/industry/google-cloud-brings-in-genai-tools-to-transform-education-with-the-enhanced-digital-campus-2-0-program.jpg",
+        articleImg: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=600&q=80",
+        content: "Google Cloud introduced 'Digital Campus on Google Cloud 2.0' at the EDNXT Hyderabad event, empowering institutions with generative AI, virtual tutors, and content summarization to address educator burnout and prepare students for future-ready skills.",
+        link: "https://education.economictimes.indiatimes.com/news/industry/google-cloud-brings-in-genai-tools-to-transform-education-with-the-enhanced-digital-campus-2-0-program/112391780"
+      },
+      {
+        title: "Google Cloud India underscores power of cloud, Gen AI in education - ET Education",
+        image: "https://images.folloze.com/image/fetch/c_lfill,h_325,w_486/f_auto/q_auto/e_sharpen/https://etimg.etb2bimg.com/thumb/msid-106307644%252Cimgsize-70390%252Cwidth-1200%252Cheight%3D765%252Coverlay-eteducation/news/edutech/google-cloud-india-underscores-power-of-cloud-gen-ai-in-education.jpg",
+        articleImg: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=600&q=80",
+        content: "At a recent summit, Google Cloud India highlighted how cloud and Gen AI are transforming education, focusing on accessibility, educator empowerment, and secure, scalable collaboration.",
+        link: "https://education.economictimes.indiatimes.com/news/industry/google-cloud-india-underscores-power-of-cloud-gen-ai-in-education/112391780"
+      },
+      {
+        title: "Google Digital Campus launch underscores potential of AI in education - ET Education",
+        image: "https://images.folloze.com/image/fetch/c_lfill,h_325,w_486/f_auto/q_auto/e_sharpen/https://etimg.etb2bimg.com/thumb/msid-105131331%252Cimgsize-176816%252Cwidth-1200%252Cheight%3D765%252Coverlay-eteducation/news/industry/google-digital-campus-launch-underscores-potential-of-ai-in-education.jpg",
+        articleImg: "https://images.folloze.com/image/fetch/c_lfill,h_325,w_486/f_auto/q_auto/e_sharpen/https://etimg.etb2bimg.com/thumb/msid-105131331%252Cimgsize-176816%252Cwidth-1200%252Cheight%3D765%252Coverlay-eteducation/news/industry/google-digital-campus-launch-underscores-potential-of-ai-in-education.jpg",
+        content: "Google Digital Campus launch event showcased the transformative potential of AI in education, with new tools and partnerships to foster skill development and industry collaboration.",
+        link: "https://googlecloud.folloze.com/digitalcampus/media-reports/google-digital-campus-launch-underscores-potential-of-ai-in-education-et-education?fw=18cc7"
+      },
+      {
+        title: "Digital Campus on Google Cloud program to foster skill development & industry collaboration",
+        image: "https://images.folloze.com/image/fetch/c_lfill,h_325,w_486/f_auto/q_auto/e_sharpen/https://etimg.etb2bimg.com/thumb/msid-103996320%252Cimgsize-61788%252Cwidth-1200%252Cheight%3D765%252Coverlay-eteducation/news/edutech/digital-campus-on-google-cloud-program-to-foster-skill-development-industry-readiness-in-students.jpg",
+        articleImg: "https://images.folloze.com/image/fetch/c_lfill,h_325,w_486/f_auto/q_auto/e_sharpen/https://etimg.etb2bimg.com/thumb/msid-103996320%252Cimgsize-61788%252Cwidth-1200%252Cheight%3D765%252Coverlay-eteducation/news/edutech/digital-campus-on-google-cloud-program-to-foster-skill-development-industry-readiness-in-students.jpg",
+        content: "The Digital Campus on Google Cloud program is designed to foster skill development and industry collaboration, offering a modern learning environment for students and educators.",
+        link: "#"
+      },
+      {
+        title: "Techno India Collaborates with Google Cloud to Propel Education In The Digital Era",
+        image: "https://images.folloze.com/image/upload/c_lfill,h_325,w_486/f_auto/q_auto/e_sharpen/v1631034909/gf5los36f6nii1p5rwfc.png",
+        articleImg: "https://images.folloze.com/image/upload/c_lfill,h_325,w_486/f_auto/q_auto/e_sharpen/v1631034909/gf5los36f6nii1p5rwfc.png",
+        content: "Techno India and Google Cloud join forces to propel education in the digital era, focusing on cloud-based learning and GenAI-powered educational resources.",
+        link: "#"
+      }
+    ];
+
+    // Render cards
+    const grid = document.getElementById('media-grid');
+    mediaData.forEach((item, idx) => {
+      const card = document.createElement('div');
+      card.className = 'media-card';
+      card.innerHTML = `
+        <img class="media-card-img" src="${item.image}" alt="Media report image">
+        <div class="media-card-content">
+          <div class="media-card-title">${item.title}</div>
+        </div>
+      `;
+      card.addEventListener('click', () => openModal(idx));
+      grid.appendChild(card);
+    });
+
+    // Modal logic
+    const modalOverlay = document.getElementById('modal-overlay');
+    const modalTitle = document.getElementById('modal-title');
+    const modalBody = document.getElementById('modal-body');
+    const modalClose = document.getElementById('modal-close');
+    const modalExtLink = document.getElementById('modal-extlink');
+    const modalArrowLeft = document.getElementById('modal-arrow-left');
+    const modalArrowRight = document.getElementById('modal-arrow-right');
+    const previewImgLeft = document.getElementById('preview-img-left');
+    const previewTitleLeft = document.getElementById('preview-title-left');
+    const previewDescLeft = document.getElementById('preview-desc-left');
+    const previewImgRight = document.getElementById('preview-img-right');
+    const previewTitleRight = document.getElementById('preview-title-right');
+    const previewDescRight = document.getElementById('preview-desc-right');
+    let currentIdx = 0;
+
+    function getSnippet(str, len = 80) {
+      if (!str) return '';
+      return str.length > len ? str.slice(0, len - 1) + "..." : str;
+    }
+
+    function renderModal(idx) {
+      const item = mediaData[idx];
+      modalTitle.textContent = item.title;
+       // Only render the link in modal body
+       modalBody.innerHTML = `
+  <iframe 
+    src="${item.link}" 
+    style="width:100%;min-height:60vh;border:1px solid #ccc;border-radius:8px;" 
+    frameborder="0"
+    allowfullscreen
+  ></iframe>
+  <div style="margin-top:10px;">
+    <a href="${item.link}" target="_blank" rel="noopener noreferrer" style="font-size:1.1rem;color:#1a73e8;text-decoration:underline;word-break:break-all;">
+      Open in new tab
+    </a>
+  </div>
+`;
+
+
+      modalExtLink.href = item.link;
+
+      // Left preview
+      if (idx > 0) {
+        modalArrowLeft.disabled = false;
+        previewImgLeft.src = mediaData[idx - 1].image;
+        previewTitleLeft.textContent = mediaData[idx - 1].title;
+        previewDescLeft.textContent = getSnippet(mediaData[idx - 1].content, 80);
+        modalArrowLeft.style.visibility = "visible";
+      } else {
+        modalArrowLeft.disabled = true;
+        previewImgLeft.src = "";
+        previewTitleLeft.textContent = "";
+        previewDescLeft.textContent = "";
+        modalArrowLeft.style.visibility = "hidden";
+      }
+      // Right preview
+      if (idx < mediaData.length - 1) {
+        modalArrowRight.disabled = false;
+        previewImgRight.src = mediaData[idx + 1].image;
+        previewTitleRight.textContent = mediaData[idx + 1].title;
+        previewDescRight.textContent = getSnippet(mediaData[idx + 1].content, 80);
+        modalArrowRight.style.visibility = "visible";
+      } else {
+        modalArrowRight.disabled = true;
+        previewImgRight.src = "";
+        previewTitleRight.textContent = "";
+        previewDescRight.textContent = "";
+        modalArrowRight.style.visibility = "hidden";
+      }
+    }
+
+    function openModal(idx) {
+      currentIdx = idx;
+      renderModal(idx);
+      modalOverlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      modalOverlay.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    modalClose.onclick = closeModal;
+    modalOverlay.onclick = function(e) {
+      // Only close if clicking outside modal content
+      if (e.target === modalOverlay) closeModal();
+    };
+    modalArrowLeft.onclick = function(e) {
+      e.stopPropagation();
+      if (currentIdx > 0) {
+        currentIdx--;
+        renderModal(currentIdx);
+      }
+    };
+    modalArrowRight.onclick = function(e) {
+      e.stopPropagation();
+      if (currentIdx < mediaData.length - 1) {
+        currentIdx++;
+        renderModal(currentIdx);
+      }
+    };
+    document.addEventListener('keydown', function(e) {
+      if (!modalOverlay.classList.contains('active')) return;
+      if (e.key === "Escape") closeModal();
+      if (e.key === "ArrowLeft" && currentIdx > 0) {
+        currentIdx--;
+        renderModal(currentIdx);
+      }
+      if (e.key === "ArrowRight" && currentIdx < mediaData.length - 1) {
+        currentIdx++;
+        renderModal(currentIdx);
+      }
+    });
+    // External link opens in new tab
+    modalExtLink.onclick = function(e) {
+      e.stopPropagation();
+    };
+  </script>
+</body>
+</html>
